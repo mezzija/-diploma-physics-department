@@ -1,9 +1,9 @@
 import numpy
-from matplotlib import pyplot
+from matplotlib import pyplot, cm
 
-nx = 11
-ny = 11
-nt = 10
+nx = 41
+ny = 41
+nt = 500
 nit = 50
 
 c = 1
@@ -15,7 +15,7 @@ X, Y = numpy.meshgrid(x, y)
 
 rho = 1
 nu = .1
-dt = .001
+dt = .0001
 pr = 1
 ra = 1
 #  начальные условия
@@ -97,8 +97,22 @@ resultV = numpy.zeros((ny, nx, nt))
 resultV[:, :, 0] = up_v(resultT[:, :, 0], resultP[:, :, 0], u, v)
 
 
-for t in range(1, nt):
-    resultT[:, :, nt] = up_t(resultT[:, :, nt - 1], resultU[:, :, nt - 1], resultV[:, :, nt - 1])
-    resultP[:, :, nt] = up_p(resultT[:, :, nt], resultU[:, :, nt - 1], resultV[:, :, nt - 1], resultP[:, :, nt - 1])
-    resultU[:, :, nt] = up_u(resultT[:, :, nt], resultP[:, :, nt], resultV[:, :, nt - 1], resultP[:, :, nt - 1])
-    resultV[:, :, nt] = up_v(resultT[:, :, nt], resultP[:, :, nt], resultV[:, :, nt - 1], resultP[:, :, nt - 1])
+for i in range(1, nt):
+    resultT[:, :, i] = up_t(resultT[:, :, i - 1], resultU[:, :, i - 1], resultV[:, :, i - 1])
+    resultP[:, :, i] = up_p(resultT[:, :, i], resultU[:, :, i - 1], resultV[:, :, i - 1], resultP[:, :, i - 1])
+    resultU[:, :, i] = up_u(resultT[:, :, i], resultP[:, :, i], resultV[:, :, i - 1], resultP[:, :, i - 1])
+    resultV[:, :, i] = up_v(resultT[:, :, i], resultP[:, :, i], resultV[:, :, i - 1], resultP[:, :, i - 1])
+
+
+fig = pyplot.figure(figsize=(11, 7), dpi=100)
+# plotting the pressure field as a contour
+pyplot.contourf(X, Y,  resultP[:, :, 9], alpha=0.5, cmap=cm.viridis)
+pyplot.colorbar()
+# plotting the pressure field outlines
+pyplot.contour(X, Y, resultP[:, :, 9], cmap=cm.viridis)
+# plotting velocity field
+pyplot.quiver(X[::2, ::2], Y[::2, ::2], resultU[::2, ::2, 9], resultV[::2, ::2, 9])
+pyplot.xlabel('X')
+pyplot.ylabel('Y')
+
+pyplot.show()
