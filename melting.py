@@ -169,6 +169,16 @@ def a_p(time, i, j):
            + heat_capacity(temperature) * (F_n(time, i, j) - F_s(time, i, j))
 
 
+for time_current in range(1, time_max):
+    for I in range(1, nx - 1):
+        for J in range(1, ny - 1):
+            J_s = -j_s if (I - 1) == 0 else a_s(time_current, I, J) * t_current[I][J - 1]
+            J_n = j_n if (I + 1) == nx - 1 else a_n(time_current, I, J) * result[time_current - 1][I][J + 1]
+            J_w = -j_w if (J - 1) == 0 else a_w(time_current, I, J) * t_current[I - 1][J]
+            J_e = j_e if (J + 1) == ny - 1 else a_n(time_current, I, J) * result[time_current - 1][I + 1][J]
 
+            t_current[I][J] = J_s + J_n + J_w + J_e
+
+    result.append(t_current)
 
 
